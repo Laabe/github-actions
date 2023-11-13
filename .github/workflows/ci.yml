@@ -42,7 +42,8 @@ jobs:
           docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "ELASTIC_USERNAME=elastic" -e "ELASTIC_PASSWORD=changeme" 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-elasticsearch:v1.0.7
           sleep 30
 
-
+      - name: running containers
+        run: docker ps
 
       - name: Check if core container is running
         run: |
