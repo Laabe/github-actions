@@ -1,3 +1,6 @@
+[![Elastic develop status](https://github.com/Laabe/github-actions/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/Laabe/github-actions/actions/workflows/ci.yml)
+
+
 # Overview
 Simple Node.js application to demonstrate the use of GitHub Actions
 
