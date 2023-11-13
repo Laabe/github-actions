@@ -65,10 +65,18 @@ jobs:
             echo "The 'elasticsearch' container is running."
           fi
 
+      - name: debug directories pwd
+        run: echo $(pwd)
+
+
+      - name: debug directories ls -al
+        run: ls -al
 
       - name: Install core dependencies
         run: |
-          docker run --rm --volume .:/app 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-composer:v1.0.5 install -o --ignore-platform-reqs
+          docker run --rm --volume $(pwd):/app 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-composer:v1.0.5 install -o --ignore-platform-reqs
+
+  
 
       - name: debug directories
         run: ls -al
