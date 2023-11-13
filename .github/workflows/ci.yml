@@ -70,8 +70,7 @@ jobs:
           docker run --rm --volume $(pwd):/app 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-composer:v1.0.5 install -o --ignore-platform-reqs
 
       - name: Generate Core Config
-        run: | 
-#          docker exec core /var/www/vendor/bin/phing generate-config |
+        run: |
           cp $(pwd)/config/development.config.php.dist $(pwd)/config/development.config.php |
           ls -al $(pwd)/config
 
