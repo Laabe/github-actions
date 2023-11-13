@@ -77,13 +77,13 @@ jobs:
 #          docker exec core /var/www/vendor/bin/phing generate-config |
           ls -al $(pwd)/config
 
-      - name: Restore mongodb database
-        run: |
-          docker exec core /var/www/vendor/bin/phing restore-db
-
-      - name: Restore elasticsearch database
-        run: |
-          docker exec core /var/www/vendor/bin/phing restore-es
+#      - name: Restore mongodb database
+#        run: |
+#          docker exec core /var/www/vendor/bin/phing restore-db
+#
+#      - name: Restore elasticsearch database
+#        run: |
+#          docker exec core /var/www/vendor/bin/phing restore-es
 
       - name: debug directories
         run: ls -al
