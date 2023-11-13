@@ -74,12 +74,12 @@ jobs:
       - name: Generate Core Config
         run: |
           cp $(pwd)/config/development.config.php.dist $(pwd)/config/development.config.php |
-#          docker exec core /var/www/vendor/bin/phing generate-config |
           ls -al $(pwd)/config
 
 #      - name: Restore mongodb database
 #        run: |
 #          docker exec core /var/www/vendor/bin/phing restore-db
+#          docker exec core /var/www/vendor/bin/phing generate-config |
 #
 #      - name: Restore elasticsearch database
 #        run: |
