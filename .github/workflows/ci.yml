@@ -47,23 +47,25 @@ jobs:
           docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "ELASTIC_USERNAME=elastic" -e "ELASTIC_PASSWORD=changeme"  077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-elasticsearch:v1.0.7
           sleep 10
 
-      - name: Check if core container is running
+      - name: Set up MongoDB
         run: |
-          if [[ ! $(docker ps -qf name=core) ]]; then
-            echo "The 'core' container is not running."
-            exit 1
-          else
-            echo "The 'core' container is running."
-          fi
+          docker run -d --name mongodb -p 27017:27017 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-mongodb:v4.2.0
 
-      - name: Check if elasticsearch container is running
+      - name: Check if container is running
         run: |
-          if [[ ! $(docker ps -qf name=elasticsearch) ]]; then
-            echo "The 'elasticsearch' container is not running."
-            exit 1
-          else
-            echo "The 'elasticsearch' container is running."
-          fi
+          check_container() {
+            local container_name=$1
+            if [[ ! $(docker ps -qf name=$container_name) ]]; then
+              echo "The '$container_name' container is not running."
+              exit 1
+            else
+              echo "The '$container_name' container is running."
+            fi
+          }
+
+          check_container core
+          check_container elasticsearch
+          check_container mongodb
 
       - name: Install core dependencies
         run: |
@@ -72,7 +74,16 @@ jobs:
       - name: Generate Core Config
         run: |
           cp $(pwd)/config/development.config.php.dist $(pwd)/config/development.config.php |
+#          docker exec core /var/www/vendor/bin/phing generate-config |
           ls -al $(pwd)/config
+
+      - name: Restore mongodb database
+        run: |
+          docker exec core /var/www/vendor/bin/phing restore-db
+
+      - name: Restore elasticsearch database
+        run: |
+          docker exec core /var/www/vendor/bin/phing restore-es
 
       - name: debug directories
         run: ls -al
