@@ -1,0 +1,46 @@
+name: Elasticsearch Behat Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v2
+
+      - name: Set up Elasticsearch container
+        run: |
+          docker run -d --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch
+          sleep 30
+
+      - name: Install PHP 7.3 and Composer
+        run: |
+          # Add the ondrej/php repository for PHP 7.3
+          sudo add-apt-repository ppa:ondrej/php -y
+          sudo apt-get update
+
+          # Install PHP 7.3 and common extensions
+          sudo apt-get install -y php7.3 php7.3-cli php7.3-common php7.3-xml php7.3-mbstring
+
+          # Install Composer globally
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+      - name: Install Dependencies and Run Behat Tests
+        run: |
+          composer require behat/behat
+
+      - name: Stop and Remove Elasticsearch Container
+        run: |
+          docker stop elasticsearch
+          docker rm elasticsearch
+
+      - name: Cleanup Docker Resources
+        run: docker system prune -f
