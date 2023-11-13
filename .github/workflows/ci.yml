@@ -1,4 +1,4 @@
-name: Elasticsearch Behat Tests
+name: Elasticsearch Test
 
 on:
   push:
