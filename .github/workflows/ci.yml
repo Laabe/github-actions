@@ -19,31 +19,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: AKIAI2VOBUYKPQFMXW6A
+          aws-secret-access-key: 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
+          aws-region: us-east-1
+
+      - name: Set up Core container
+        run: |
+          docker run -d --name core -p 9001:9000 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-core:corev4
+
       - name: Set up Elasticsearch container
         run: |
-          docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+          docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node, ELASTIC_USERNAME=elastic, ELASTIC_PASSWORD=changeme" 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-elasticsearch:v1.0.7
           sleep 30
 
-      - name: Install PHP 7.3 and Composer
-        run: |
-          # Add the ondrej/php repository for PHP 7.3
-          sudo add-apt-repository ppa:ondrej/php -y
-          sudo apt-get update
-
-          # Install PHP 7.3 and common extensions
-          sudo apt-get install -y php7.3 php7.3-cli php7.3-common php7.3-xml php7.3-mbstring
-
-          # Install Composer globally
-          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-      - name: Install Dependencies and Run Behat Tests
-        run: |
-          composer require behat/behat
-
-      - name: Stop and Remove Elasticsearch Container
-        run: |
-          docker stop elasticsearch
-          docker rm elasticsearch
-
-      - name: Cleanup Docker Resources
-        run: docker system prune -f
+#      - name: Stop and Remove Elasticsearch Container
+#        run: |
+#          docker stop elasticsearch
+#          docker rm elasticsearch
+#
+#      - name: Cleanup Docker Resources
+#        run: docker system prune -f
