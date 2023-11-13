@@ -43,9 +43,28 @@ jobs:
           sleep 30
 
 
+
+      - name: Check if core container is running
+        run: |
+          if [[ ! $(docker ps -qf name=core) ]]; then
+            echo "The 'core' container is not running."
+            exit 1
+          else
+            echo "The 'core' container is running."
+          fi
+
+      - name: Check if elasticsearch container is running
+        run: |
+          if [[ ! $(docker ps -qf name=elasticsearch) ]]; then
+            echo "The 'elasticsearch' container is not running."
+            exit 1
+          else
+            echo "The 'elasticsearch' container is running."
+          fi
+
       - name: Install core dependencies
         run: |
-          docker exec -it core /bin/bash composer install
+          docker exec -it core composer install
 
 #      - name: Stop and Remove Elasticsearch Container
 #        run: |
