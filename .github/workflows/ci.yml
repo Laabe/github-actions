@@ -66,8 +66,7 @@ jobs:
 
       - name: Install core dependencies
         run: |
-          docker exec -it core cd /var/www
-          composer install
+          docker exec core sh -c "cd /var/www && composer install"
 
 #      - name: Stop and Remove Elasticsearch Container
 #        run: |
