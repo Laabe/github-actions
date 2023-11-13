@@ -3,7 +3,12 @@ name: Elasticsearch Behat Tests
 on:
   push:
     branches:
-      - main
+      - develop
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
 
 jobs:
   test:
@@ -34,13 +39,13 @@ jobs:
 
       - name: Set up Core container
         run: |
-          docker run -d --name core -p 9001:9000 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-core:corev4
+          docker run -d --name core -p 9001:9000 -e "ENV=local" -e "ELASTIC_ENV=local" -e "AUTH_ENV=local" 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-core:corev4
 
 
       - name: Set up Elasticsearch container
         run: |
-          docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "ELASTIC_USERNAME=elastic" -e "ELASTIC_PASSWORD=changeme" 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-elasticsearch:v1.0.7
-          sleep 30
+          docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" -e "ELASTIC_USERNAME=elastic" -e "ELASTIC_PASSWORD=changeme"  077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-elasticsearch:v1.0.7
+          sleep 10
 
       - name: Check if core container is running
         run: |
@@ -60,24 +65,17 @@ jobs:
             echo "The 'elasticsearch' container is running."
           fi
 
-      - name: debug directories pwd
-        run: echo $(pwd)
-
-
-      - name: debug directories ls -al
-        run: ls -al
-
       - name: Install core dependencies
         run: |
           docker run --rm --volume $(pwd):/app 077428399685.dkr.ecr.us-east-1.amazonaws.com/local-hireme-composer:v1.0.5 install -o --ignore-platform-reqs
 
+      - name: Generate Core Config
+        run: |
+          cp $(pwd)/config/development.config.php.dist $(pwd)/config/development.config.php |
+          ls -al $(pwd)/config
+
       - name: debug directories
         run: ls -al
 
-#      - name: Stop and Remove Elasticsearch Container
-#        run: |
-#          docker stop elasticsearch
-#          docker rm elasticsearch
-#
-#      - name: Cleanup Docker Resources
-#        run: docker system prune -f
+      - name: Run Behat Tests
+        run: echo "test is running"
